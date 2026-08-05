@@ -34,6 +34,8 @@ func InitializeDatabase() error {
 
 	db.AutoMigrate(&CronInterval{})
 
+	db.AutoMigrate(&PatroniClusterMember{})
+
 	DB = db
 
 	return nil

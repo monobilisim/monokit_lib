@@ -94,3 +94,18 @@ type CronInterval struct {
 	Name    string     `gorm:"text,unique" json:"name"`
 	LastRun *time.Time `gorm:"int" json:"last_run"`
 }
+
+// PatroniClusterMember stores the last seen state of one Patroni cluster
+// member, so pgsqlHealth can detect role changes and cluster size changes
+// between runs. One row per member; rows are replaced on every run.
+type PatroniClusterMember struct {
+	gorm.Model
+	Id       uint   `gorm:"primaryKey;autoIncrement"`
+	Scope    string `gorm:"text" json:"scope"` // Patroni cluster name
+	Name     string `gorm:"text;uniqueIndex" json:"name"`
+	Role     string `gorm:"text" json:"role"`
+	State    string `gorm:"text" json:"state"`
+	Host     string `gorm:"text" json:"host"`
+	Port     int64  `gorm:"int" json:"port"`
+	Timeline int64  `gorm:"int" json:"timeline"`
+}

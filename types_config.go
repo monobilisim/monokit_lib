@@ -190,6 +190,32 @@ type DBConfigType struct {
 			Enabled bool `yaml:"enabled"`
 		} `yaml:"alarm"`
 
+		WalG struct {
+			Enabled bool `yaml:"enabled"`
+			// 24h HH:MM at which the daily verify runs (empty = every run)
+			VerifyHour string `yaml:"verify-hour"`
+			// run wal-g as this OS user when the plugin runs as root (peer auth)
+			RunAsUser string `yaml:"run-as-user"`
+		} `yaml:"wal-g"`
+
+		Patroni struct {
+			Enabled    bool   `yaml:"enabled"`
+			ConfigPath string `yaml:"config-path"`
+			// shell command executed when this node becomes the leader
+			LeaderSwitchHook string `yaml:"leader-switch-hook"`
+		} `yaml:"patroni"`
+
+		Consul struct {
+			Enabled bool   `yaml:"enabled"`
+			Url     string `yaml:"url"`
+			DnsPort int    `yaml:"dns-port"`
+		} `yaml:"consul"`
+
+		HAProxy struct {
+			Enabled    bool   `yaml:"enabled"`
+			ConfigPath string `yaml:"config-path"`
+		} `yaml:"haproxy"`
+
 		// Not implemented yet, can be added in the future versions
 		Cluster struct {
 			Enabled           bool    `yaml:"enabled"`
