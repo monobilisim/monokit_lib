@@ -161,4 +161,42 @@ type DBConfigType struct {
 			Enabled bool `yaml:"enabled"`
 		} `yaml:"alarm"`
 	} `yaml:"mariadb"`
+
+	PostgreSQL struct {
+		ProcessLimit           int `yaml:"process-limit"`
+		ActiveQueryLimit       int `yaml:"active-query-limit"`
+		ConnectionLimitPercent int `yaml:"connection-limit-percent"`
+
+		Credentials struct {
+			Mode             string `yaml:"mode"` // "manual" or "string"
+			ConnectionString string `yaml:"connection-string"`
+			Host             string `yaml:"host"`
+			Port             int    `yaml:"port"`
+			User             string `yaml:"user"`
+			Password         string `yaml:"password"`
+			DBName           string `yaml:"dbname"`
+		} `yaml:"credentials"`
+
+		LongQuery struct {
+			Enabled  bool `yaml:"enabled"`
+			Duration int  `yaml:"duration"` // in seconds
+		} `yaml:"long-query"`
+
+		PMMAgent struct {
+			Enabled bool `yaml:"enabled"`
+		} `yaml:"pmm-agent"`
+
+		Alarm struct {
+			Enabled bool `yaml:"enabled"`
+		} `yaml:"alarm"`
+
+		// Not implemented yet, can be added in the future versions
+		Cluster struct {
+			Enabled           bool    `yaml:"enabled"`
+			ClusterType       string  `yaml:"cluster-type"` // pgpool, patroni
+			Size              int     `yaml:"size"`
+			ReceiveQueueLimit int     `yaml:"receive-queue-limit"`
+			FlowControlLimit  float64 `yaml:"flow-control-limit"`
+		} `yaml:"cluster"`
+	} `yaml:"postgresql"`
 }
