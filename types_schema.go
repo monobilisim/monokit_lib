@@ -102,7 +102,7 @@ type PatroniClusterMember struct {
 	gorm.Model
 	Id       uint   `gorm:"primaryKey;autoIncrement"`
 	Scope    string `gorm:"text" json:"scope"` // Patroni cluster name
-	Name     string `gorm:"text;uniqueIndex" json:"name"`
+	Name     string `gorm:"text" json:"name"`
 	Role     string `gorm:"text" json:"role"`
 	State    string `gorm:"text" json:"state"`
 	Host     string `gorm:"text" json:"host"`
