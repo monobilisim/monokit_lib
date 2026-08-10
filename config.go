@@ -17,6 +17,7 @@ var GlobalConfig GlobalConfigType
 var OsHealthConfig OsHealthConfigType
 var UfwApplyConfig UfwApplyConfigType
 var DBConfig DBConfigType
+var RedisHealthConfig RedisHealthConfigType
 
 func InitConfig(configFiles ...string) error {
 	if _, err := os.Stat("/etc/mono"); os.IsNotExist(err) {
@@ -110,6 +111,25 @@ func InitConfig(configFiles ...string) error {
 				err = yaml.Unmarshal(dbConfigData, &DBConfig)
 				if err != nil {
 					return fmt.Errorf("failed to parse db configuration file: %w", err)
+				}
+			}
+		case "redis.yml":
+			redisHealthConfigExists := false
+			if _, err := os.Stat("/etc/mono/redis.yml"); err == nil {
+				redisHealthConfigExists = true
+			} else {
+				return fmt.Errorf("redis configuration file does not exist")
+			}
+
+			if redisHealthConfigExists {
+				redisHealthConfigData, err := os.ReadFile("/etc/mono/redis.yml")
+				if err != nil {
+					return fmt.Errorf("failed to read redis configuration file: %w", err)
+				}
+
+				err = yaml.Unmarshal(redisHealthConfigData, &RedisHealthConfig)
+				if err != nil {
+					return fmt.Errorf("failed to parse redis configuration file: %w", err)
 				}
 			}
 		}

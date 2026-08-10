@@ -95,6 +95,15 @@ type CronInterval struct {
 	LastRun *time.Time `gorm:"int" json:"last_run"`
 }
 
+// RedisRole stores the last seen replication role of the local Redis instance,
+// so redisHealth can detect master/replica changes between runs. A single row
+// that is updated on every run.
+type RedisRole struct {
+	gorm.Model
+	Id   uint   `gorm:"primaryKey;autoIncrement"`
+	Role string `gorm:"text" json:"role"`
+}
+
 // PatroniClusterMember stores the last seen state of one Patroni cluster
 // member, so pgsqlHealth can detect role changes and cluster size changes
 // between runs. One row per member; rows are replaced on every run.

@@ -92,6 +92,26 @@ type UfwApplyConfigType struct {
 	RulesetDir string `yaml:"ruleset-dir"`
 }
 
+type RedisHealthConfigType struct {
+	Credentials struct {
+		Host     string `yaml:"host"`
+		Port     int    `yaml:"port"`
+		Password string `yaml:"password"`
+		Socket   string `yaml:"socket"`
+	} `yaml:"credentials"`
+
+	Sentinel struct {
+		Enabled bool `yaml:"enabled"`
+		Port    int  `yaml:"port"`
+		// Expected number of replicas connected to the master
+		ReplicaCount int `yaml:"replica-count"`
+	} `yaml:"sentinel"`
+
+	Alarm struct {
+		Enabled bool `yaml:"enabled"`
+	} `yaml:"alarm"`
+}
+
 type DBConfigType struct {
 	Mysql struct {
 		ProcessLimit int `yaml:"process-limit"`
