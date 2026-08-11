@@ -36,6 +36,8 @@ func InitializeDatabase() error {
 
 	db.AutoMigrate(&RedisRole{})
 
+	db.AutoMigrate(&ValkeyRole{})
+
 	db.AutoMigrate(&PatroniClusterMember{})
 
 	DB = db

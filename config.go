@@ -18,6 +18,7 @@ var OsHealthConfig OsHealthConfigType
 var UfwApplyConfig UfwApplyConfigType
 var DBConfig DBConfigType
 var RedisHealthConfig RedisHealthConfigType
+var ValkeyHealthConfig ValkeyHealthConfigType
 
 func InitConfig(configFiles ...string) error {
 	if _, err := os.Stat("/etc/mono"); os.IsNotExist(err) {
@@ -130,6 +131,25 @@ func InitConfig(configFiles ...string) error {
 				err = yaml.Unmarshal(redisHealthConfigData, &RedisHealthConfig)
 				if err != nil {
 					return fmt.Errorf("failed to parse redis configuration file: %w", err)
+				}
+			}
+		case "valkey.yml":
+			valkeyHealthConfigExists := false
+			if _, err := os.Stat("/etc/mono/valkey.yml"); err == nil {
+				valkeyHealthConfigExists = true
+			} else {
+				return fmt.Errorf("valkey configuration file does not exist")
+			}
+
+			if valkeyHealthConfigExists {
+				valkeyHealthConfigData, err := os.ReadFile("/etc/mono/valkey.yml")
+				if err != nil {
+					return fmt.Errorf("failed to read valkey configuration file: %w", err)
+				}
+
+				err = yaml.Unmarshal(valkeyHealthConfigData, &ValkeyHealthConfig)
+				if err != nil {
+					return fmt.Errorf("failed to parse valkey configuration file: %w", err)
 				}
 			}
 		}
