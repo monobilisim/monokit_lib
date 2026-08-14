@@ -128,3 +128,23 @@ type PatroniClusterMember struct {
 	Port     int64  `gorm:"int" json:"port"`
 	Timeline int64  `gorm:"int" json:"timeline"`
 }
+
+// DiskUsageTracking keeps the last reported usage percent per mountpoint so
+// osHealth only sends a Redmine note when disk usage grows.
+type DiskUsageTracking struct {
+	gorm.Model
+	ProjectIdentifier string `gorm:"text"`
+	Hostname          string `gorm:"text"`
+	Mountpoint        string `gorm:"text"`
+	UsedPct           int    `gorm:"int"`
+}
+
+// EOLNotification remembers which application versions were already reported
+// as end of life so osHealth avoids duplicate alerts.
+type EOLNotification struct {
+	gorm.Model
+	ProjectIdentifier string `gorm:"text"`
+	Hostname          string `gorm:"text"`
+	Name              string `gorm:"text"`
+	Version           string `gorm:"text"`
+}
