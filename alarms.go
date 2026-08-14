@@ -417,6 +417,15 @@ func CreateRedmineIssue(issue Issue) error {
 	}
 
 	if lastIssue.Status == issue.Status {
+		// same status but has notes: add note to existing issue
+		if issue.Notes != "" {
+			existingIssue := findRecentSimilarIssue(issue.Service, issue.Module, 6)
+			if existingIssue != nil {
+				Logger.Info().Int("existing_issue_id", existingIssue.Id).Str("subject", issue.Subject).Msg("Adding note to open issue (same status)")
+				issue.Id = existingIssue.Id
+				return updateRedmineIssueStatus(existingIssue.Id, issue)
+			}
+		}
 		Logger.Info().Str("subject", issue.Subject).Msg("Last issue status same as new issue, skipping creating new one")
 		return nil
 	}
