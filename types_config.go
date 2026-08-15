@@ -166,6 +166,24 @@ type DBConfigType struct {
 		} `yaml:"alarm"`
 	} `yaml:"mysql"`
 
+	PostgreSQL struct {
+		ConnectionString string `yaml:"connection-string"`
+		ActivityLimit    int    `yaml:"activity-limit"`
+		ConnectionLimit  int    `yaml:"connection-limit"`
+
+		Alarm struct {
+			Enabled   bool `yaml:"enabled"`
+			LongQuery struct {
+				Enabled         bool `yaml:"enabled"`
+				DurationSeconds int  `yaml:"duration-seconds"`
+			} `yaml:"long-query"`
+		} `yaml:"alarm"`
+
+		PMMAgent struct {
+			Enabled bool `yaml:"enabled"`
+		} `yaml:"pmm-agent"`
+	} `yaml:"postgresql"`
+
 	MariaDB struct {
 		ProcessLimit int `yaml:"process-limit"`
 		Credentials  struct {
