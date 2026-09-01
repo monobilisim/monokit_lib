@@ -73,9 +73,10 @@ jobs:
       - name: Run tests (inside Podman)
         run: just test
 
-      - name: Upload coverage
+      # logs/ holds monokit2.db, monokit2.log, the test transcript and coverage.
+      - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: coverage
+          name: test-artifacts
           path: logs/

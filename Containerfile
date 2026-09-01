@@ -32,13 +32,30 @@ RUN mkdir -p /etc/mono && cp config/global.yml /etc/mono/global.yml
 # quote removal happens before parameter expansion, so the quotes inside a
 # ${TEST_RUN:+-run "$TEST_RUN"} would reach go test literally.
 COPY <<'EOF' /run-tests.sh
-#!/bin/sh
-go test -v -count=1 -coverprofile=/tmp/coverage.out -run "${TEST_RUN:-.}" ./...
+#!/bin/bash
+# bash, not sh: the transcript is teed so it streams live, and only bash has
+# pipefail — under dash $? would be tee's status and a failing test would exit 0.
+set -o pipefail
+
+# The transcript goes to its own file rather than to global.yml's log-location.
+# The plugin harness tees into /var/log/monokit2.log, which is also what the
+# library's own logger has open in append mode — two writers at two offsets in
+# one file clobber each other's regions. Keeping them apart means monokit2.log
+# is purely what the library logged.
+go test -v -count=1 -coverprofile=/tmp/coverage.out -run "${TEST_RUN:-.}" ./... 2>&1 \
+    | tee /tmp/test-output.log
 code=$?
 
 if [ -d /artifacts ]; then
-    cp /tmp/coverage.out /artifacts/ 2>/dev/null
+    # Same three artifacts the plugin suites produce, from the paths
+    # config/global.yml points the library at.
+    cp /var/lib/monokit2/monokit2.db /artifacts/monokit2.db 2>/dev/null
+    cp /var/log/monokit2.log /artifacts/monokit2.log 2>/dev/null
+    cp /tmp/test-output.log /artifacts/test-output.log 2>/dev/null
+
+    cp /tmp/coverage.out /artifacts/coverage.out 2>/dev/null
     go tool cover -func=/tmp/coverage.out > /artifacts/coverage.txt 2>/dev/null
+
     if [ -n "$HOST_UID" ]; then
         chown "$HOST_UID:${HOST_GID:-$HOST_UID}" /artifacts/* 2>/dev/null
     fi
