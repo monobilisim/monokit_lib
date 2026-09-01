@@ -17,7 +17,7 @@ func HandleCommonPluginArgs(args []string, version string, configFiles []string)
 
 	switch os.Args[1] {
 	case "--version", "-v", "version", "v":
-		fmt.Printf(version)
+		fmt.Print(version)
 		return
 	case "--dependencies", "-d", "dependencies", "d":
 		r := Dependencies{

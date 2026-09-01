@@ -1,0 +1,81 @@
+name: Build & Test
+
+on:
+  push: # every push and every branch, including main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Set up Go 1.25
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Set up just
+        uses: extractions/setup-just@v3
+
+      - name: gofmt
+        run: just fmt-check
+
+      - name: go vet
+        run: just vet
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Set up Go 1.25
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Set up just
+        uses: extractions/setup-just@v3
+
+      # lib is linked into every plugin, and it carries a
+      # shutdown_notifier_linux.go / _stub.go build-tag split that no test can
+      # cover — a test only ever builds for the platform it runs on. Linking the
+      # smoke binary for each release target is what actually proves the split
+      # still compiles.
+      - name: Cross-compile for every release target
+        env:
+          VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'devel' }}
+        run: just build-all
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Set up just
+        uses: extractions/setup-just@v3
+
+      - name: Install Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+
+      # The suite writes to /etc/mono, /var/log and /var/lib, so it runs in a
+      # throwaway container rather than on the runner.
+      - name: Run tests (inside Podman)
+        run: just test
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage
+          path: logs/

@@ -3,6 +3,7 @@ package lib
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -67,7 +68,7 @@ func SendZulipAlarm(message string, service string, module string, status string
 		var message string
 		message = fmt.Sprintf("Zulip alarm limit (%d) has reached to limit for %s, skipping this one", GlobalConfig.ZulipAlarm.Limit, service)
 		Logger.Info().Str("service", service).Msg(message)
-		return fmt.Errorf(message)
+		return errors.New(message)
 	}
 
 	if !IsTestMode() {
@@ -75,7 +76,7 @@ func SendZulipAlarm(message string, service string, module string, status string
 			var message string
 			message = fmt.Sprintf("Enough time is not passed since the last alarm from %s, skipping this one", service)
 			Logger.Info().Str("service", service).Msg(message)
-			return fmt.Errorf(message)
+			return errors.New(message)
 		}
 	}
 
@@ -399,7 +400,7 @@ func CreateRedmineIssue(issue Issue) error {
 			message = fmt.Sprintf("Redmine issue limit (%d) has reached to limit, skipping this one", GlobalConfig.Redmine.Limit)
 			Logger.Info().Msg(message)
 		}
-		return fmt.Errorf(message)
+		return errors.New(message)
 	}
 
 	if !IsTestMode() {
@@ -412,7 +413,7 @@ func CreateRedmineIssue(issue Issue) error {
 				message = "Enough time is not passed since the last issue, skipping this one"
 				Logger.Info().Msg(message)
 			}
-			return fmt.Errorf(message)
+			return errors.New(message)
 		}
 	}
 
