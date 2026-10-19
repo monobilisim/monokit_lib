@@ -90,6 +90,8 @@ type UfwApplyConfigType struct {
 		Comment  string `yaml:"comment"`
 	} `yaml:"static-rules"`
 	RulesetDir string `yaml:"ruleset-dir"`
+	RulesDir   string `yaml:"rules-dir"`
+	TmpDirBase string `yaml:"tmp-dir-base"`
 }
 
 type RedisHealthConfigType struct {
